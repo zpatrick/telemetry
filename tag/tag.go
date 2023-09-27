@@ -7,7 +7,7 @@ type Tag interface {
 
 // TagValue is a type that can be used as a tag value.
 type TagValue interface {
-	~string | ~int | ~int64 | ~uint | ~uint64 | ~float64 | ~bool
+	~string | ~int | ~int64 | ~float64 | ~bool
 }
 
 type tag[T TagValue] struct {
