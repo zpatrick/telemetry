@@ -5,6 +5,7 @@ go 1.20
 require (
 	github.com/newrelic/go-agent/v3 v3.19.1
 	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/logWriter v1.0.1
+	github.com/pkg/errors v0.9.1
 	github.com/zpatrick/testx v0.0.1
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
 )
