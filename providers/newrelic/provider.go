@@ -39,6 +39,7 @@ func (c Config) Validate() error {
 type Provider struct {
 	app *newrelic.Application
 	*logger
+	*metricRecorder
 }
 
 func (p *Provider) Close(ctx context.Context) error {
@@ -78,8 +79,9 @@ func SetupProvider(c Config) (*Provider, error) {
 	}
 
 	p := &Provider{
-		app:    app,
-		logger: newLogger(app, c.LogOutput, c.Debug),
+		app:            app,
+		logger:         newLogger(app, c.LogOutput, c.Debug),
+		metricRecorder: newMetricRecorder(app),
 	}
 
 	return p, nil
