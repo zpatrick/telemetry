@@ -1,9 +1,13 @@
 package newrelic
 
 import (
+	"context"
 	"flag"
+	"io"
 	"os"
 	"testing"
+
+	"github.com/zpatrick/telemetry/tag"
 )
 
 var (
@@ -19,6 +23,26 @@ func ensureE2ETestsEnabled(t *testing.T) {
 	if newRelicLicense == "" {
 		t.Fatal("NEWRELIC_LICENSE not set")
 	}
+}
+
+func newTestProvider(t *testing.T) (context.Context, *Provider) {
+	ensureE2ETestsEnabled(t)
+
+	ctx := tag.ContextWithTags(context.Background(), tag.New("environment", "test"))
+	cfg := Config{
+		AppName:   "test-app",
+		License:   newRelicLicense,
+		LogOutput: io.Discard,
+		Debug:     true,
+	}
+
+	p, err := SetupProvider(cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { p.Close(ctx) })
+
+	return ctx, p
 }
 
 func TestMain(m *testing.M) {

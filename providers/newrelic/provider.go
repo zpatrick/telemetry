@@ -16,6 +16,21 @@ const (
 	DefaultShutdownTimeout = time.Second * 3
 )
 
+var excludeTraceAttributes = []string{
+	"appId",
+	"duration",
+	"entity.guid",
+	"entityGuid",
+	"id",
+	"trace.id",
+	"guid",
+	"priority",
+	"realAgentId",
+	"tags.account",
+	"tags.accountId",
+	"tags.trustedAccountId",
+}
+
 type Config struct {
 	AppName   string
 	License   string
@@ -40,6 +55,7 @@ type Provider struct {
 	app *newrelic.Application
 	*logger
 	*metricRecorder
+	*tracer
 }
 
 func (p *Provider) Close(ctx context.Context) error {
@@ -62,6 +78,18 @@ func SetupProvider(c Config) (*Provider, error) {
 		newrelic.ConfigLicense(c.License),
 		newrelic.ConfigAppLogForwardingEnabled(true),
 		newrelic.ConfigEnabled(!c.Disabled),
+		newrelic.ConfigDistributedTracerEnabled(true),
+		func(config *newrelic.Config) {
+			// TODO: This doesn't seem to work
+			config.TransactionEvents.Attributes.Enabled = true
+			config.TransactionEvents.Attributes.Exclude = excludeTraceAttributes
+
+			config.TransactionTracer.Attributes.Enabled = true
+			config.TransactionTracer.Attributes.Exclude = excludeTraceAttributes
+
+			config.TransactionTracer.Segments.Attributes.Enabled = true
+			config.TransactionTracer.Segments.Attributes.Exclude = excludeTraceAttributes
+		},
 		// TODO set custom logger
 	}
 
@@ -82,6 +110,7 @@ func SetupProvider(c Config) (*Provider, error) {
 		app:            app,
 		logger:         newLogger(app, c.LogOutput, c.Debug),
 		metricRecorder: newMetricRecorder(app),
+		tracer:         newTracer(app),
 	}
 
 	return p, nil

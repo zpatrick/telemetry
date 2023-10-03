@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"io"
 	"testing"
 	"time"
 
@@ -72,27 +71,17 @@ func TestLoggerDebugDisabled(t *testing.T) {
 	assert.Equal(t, buf.Len(), 0)
 }
 
-func TestLoggerWith(t *testing.T) {
-	t.Skip("TODO")
+func TestLoggerE2E(t *testing.T) {
+	ctx, p := newTestProvider(t)
+	p.Debug(ctx, "hello debug", tag.New("foo", "bar"))
+	p.Info(ctx, "hello info", tag.New("foo", "bar"))
+	p.Error(ctx, "hello error", tag.New("foo", "bar"))
 }
 
-func TestLoggerE2E(t *testing.T) {
-	ensureE2ETestsEnabled(t)
-
-	// TODO: standardize "environemnt" tag.
-	ctx := tag.ContextWithTags(context.Background(), tag.New("environment", "test"))
-	cfg := Config{
-		AppName:   "test-app",
-		License:   newRelicLicense,
-		LogOutput: io.Discard,
-		Debug:     true,
-	}
-
-	p, err := SetupProvider(cfg)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer p.Close(ctx)
+func TestLoggerE2E_withTrace(t *testing.T) {
+	ctx, p := newTestProvider(t)
+	ctx = p.Start(ctx, "TestLoggerE2E_withTrace")
+	defer p.End(ctx)
 
 	p.Debug(ctx, "hello debug", tag.New("foo", "bar"))
 	p.Info(ctx, "hello info", tag.New("foo", "bar"))
