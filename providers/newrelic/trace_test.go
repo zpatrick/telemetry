@@ -11,11 +11,6 @@ import (
 	"github.com/zpatrick/testx/assert"
 )
 
-// Test Scenarios:
-
-// Receiving a trace from a client.
-// Sending a trace to a client.
-
 func TestTracerE2E_basic(t *testing.T) {
 	ctx, p := newTestProvider(t)
 	ctx = p.Start(ctx, "TracerTestBasic", tag.New("alpha", 1))
