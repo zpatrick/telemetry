@@ -15,5 +15,5 @@ type Logger interface {
 	// Warn logs a message at the warn level.
 	Error(ctx context.Context, message string, tags ...tag.Tag)
 	// With returns a new Logger which includes the given tags in each log.
-	With(tags ...tag.Tag) Logger
+	//With(tags ...tag.Tag) Logger
 }
