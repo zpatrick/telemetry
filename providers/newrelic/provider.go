@@ -58,6 +58,11 @@ type Provider struct {
 	*tracer
 }
 
+// TODO: remove
+func (p *Provider) App() *newrelic.Application {
+	return p.app
+}
+
 func (p *Provider) Close(ctx context.Context) error {
 	timeout := DefaultShutdownTimeout
 	if deadline, ok := ctx.Deadline(); ok {
